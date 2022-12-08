@@ -9,6 +9,6 @@
 1. Улитина Арина - GitHub: [zalikvl25](https://github.com/zalikvl25)
 2. Васильев Илья - GitHub: [Ilya](https://github.com/IlyaVasilev99)
 3. Скрипников Максим - GitHub: [Skripnikov M.V.](https://github.com/xaderil)
-4. Кушнарев Олег
+4. Кушнарев Олег - GitHub: [Oleg Kushnarev](https://github.com/KushnarevOR)
 5. Ивановский Стас - GitHub: [Stas Ivanovskii](https://github.com/ivanovskii)
 
