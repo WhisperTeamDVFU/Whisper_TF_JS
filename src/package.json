@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export && mv out/_next out/next && sed 's/_next/\\.\\/next/g' out/**.html && mv out/index.html ../extension && rsync -p -va --delete-after out/next/ ../extension/next/",
+    "build": "next build && next export && mv out/_next out/next && sed -i 's/_next/next/g' out/**.html && sed -i 's~next/~resources/next/~g' out/**.html && sed -i 's~../public~resources/public~g' out/**.html && mv out/index.html ../ && rsync -p -va --delete-after out/ ../resources && cp -r public/ ../resources",
     "start": "next start",
     "lint": "next lint"
   },
