@@ -4,6 +4,7 @@
 /src/out
 /src/.next
 
+.idea
 .next
 
 # dependencies
