@@ -1,7 +1,7 @@
 # Whisper_TF_JS
 
 ## Проект
-Реализация модели [whisper](https://github.com/openai/whisper) на [tf-js](https://www.tensorflow.org/js). 
+Реализация модели [whisper](https://github.com/openai/whisper) на [tf-js](https://www.tensorflow.org/js).
 
 Страница на GitHub.io: https://whisperteamdvfu.github.io/Whisper_TF_JS
 
