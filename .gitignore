@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-/whisper/node_modules
-/whisper/out
-/whisper/.next
+/src/node_modules
+/src/out
+/src/.next
 
 .next
 
