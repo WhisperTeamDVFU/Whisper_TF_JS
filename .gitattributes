@@ -1,0 +1,2 @@
+src/public/*.hdf5 filter=lfs diff=lfs merge=lfs -text
+src/public/tiny.hdf5 filter=lfs diff=lfs merge=lfs -text
