@@ -2,7 +2,7 @@
   "name": "whisper_tf_js",
   "version": "1.0.0",
   "description": "## Проект Реализация модели [whisper](https://github.com/openai/whisper) на [tf-js](https://www.tensorflow.org/js).",
-  "main": "js/scripts/index.js",
+  "main": "src/scripts/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,11 +13,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/WhisperTeamDVFU/Whisper_TF_JS/issues"
-  },
   "homepage": "https://github.com/WhisperTeamDVFU/Whisper_TF_JS#readme",
   "dependencies": {
     "jquery": "^3.6.3"
+  },
+  "devDependencies": {
+    "parcel": "^2.8.3"
   }
 }
