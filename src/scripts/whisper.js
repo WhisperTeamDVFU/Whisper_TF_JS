@@ -53,11 +53,33 @@ class MultiHeadAttention extends tf.layers.Layer {
 		}
         qk = qk.cast('float32');
 
-        w = tf.softmax(qk, dim=-1);
+        let w = tf.softmax(qk, dim=-1);
 
-		res = w.matMul(v).transpose([0, 2, 1, 3]);
-		new_shape = res.shape.slice(0, 2).concat([-1]);
+		let res = w.matMul(v).transpose([0, 2, 1, 3]);
+		let new_shape = res.shape.slice(0, 2).concat([-1]);
 
 		return res.reshape(new_shape), qk;
+	}
+}
+
+class ResidualAttentionBlock extends tf.layers.Layer {
+	constructor(n_state, n_head, cross_attention=false) {
+		super();
+
+		this.attn = MultiHeadAttention({n_state: n_state, n_head: n_head});
+		this.attn_ln = tf.layers.layerNormalization({input_shape: n_state});
+
+		this.cross_attn = cross_attention ? MultiHeadAttention({n_state: n_state, n_head: n_head}) : null;
+		this.cross_attn_ln = cross_attention ? tf.layers.layerNormalization({input_shape: n_state}) : null;
+
+		let n_mlp = n_state * 4;
+		this.mlp = tf.sequential({
+			layers: [
+				tf.layers.dense({units: n_mlp, inputShape: n_state}),
+				null, // Gelu
+				tf.layers.dense({units: n_state, inputShape: n_mlp}),				
+			]
+		})
+		this.mlp_ln = tf.layers.layerNormalization({input_shape: n_state});
 	}
 }
