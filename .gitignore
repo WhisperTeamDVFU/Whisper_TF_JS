@@ -4,6 +4,7 @@
 .idea
 /dist
 /.parcel-cache
+/public/weights
 
 # debug
 npm-debug.log*
