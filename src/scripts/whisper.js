@@ -21,7 +21,7 @@ class MultiHeadAttention extends tf.layers.Layer {
 		this.out = tf.layers.dense({units: n_state, inputShape: n_state});
 	}
 
-	forward(x, xa, mask, kv_cache) {
+	call(x, xa, mask, kv_cache) {
 		const q = this.query.apply(x);
 
 		let k, v;
@@ -62,6 +62,12 @@ class MultiHeadAttention extends tf.layers.Layer {
 	}
 }
 
+class GELU extends tf.layers.layer {
+	call(x) {
+		return x.mul(tf.erf(tf.div(x, Math.sqrt(2))).add(tf.scalar(1)).mul(0.5));
+	}
+}
+
 class ResidualAttentionBlock extends tf.layers.Layer {
 	constructor(n_state, n_head, cross_attention=false) {
 		super();
@@ -76,10 +82,14 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 		this.mlp = tf.sequential({
 			layers: [
 				tf.layers.dense({units: n_mlp, inputShape: n_state}),
-				null, // Gelu
+				new GELU(),
 				tf.layers.dense({units: n_state, inputShape: n_mlp}),				
 			]
 		})
 		this.mlp_ln = tf.layers.layerNormalization({input_shape: n_state});
+	}
+
+	call(x, xa, mask, kv_cache) {
+		x = x.add(this.attn())
 	}
 }
