@@ -1,7 +1,6 @@
 #!/bin/bash
 
 WEIGHTS_DIR="public/weights"
-DOWNLOAD_APP="./utils/goodls"
 
 declare -A WEIGHTS
 WEIGHTS=(
@@ -31,11 +30,14 @@ do
   WEIGHTS_URL=${WEIGHTS[$WEIGHT_NAME]}
   WEIGHTS_CONFIG_URL=${WEIGHTS_CONFIGS[$WEIGHT_NAME]}
   WEIGHTS_FILE="${WEIGHT_NAME}.hdf5"
-
+  echo "${WEIGHTS_URL}"
   if [ ! -f "$WEIGHTS_DIR/$WEIGHTS_FILE" ]; then
     echo "File $WEIGHTS_DIR/$WEIGHTS_FILE not found, downloading it..."
-    ${DOWNLOAD_APP} -u "$WEIGHTS_URL" -d "$WEIGHTS_DIR"
-    ${DOWNLOAD_APP} -u "$WEIGHTS_CONFIG_URL" -d "$WEIGHTS_DIR/configs" -f "${WEIGHT_NAME}.json"
+
+    gdown --fuzzy "${WEIGHTS_URL}"
+    mv ./$WEIGHTS_FILE public/weights/
+    gdown --fuzzy "${WEIGHTS_CONFIG_URL}" -O "${WEIGHT_NAME}.json"
+    mv ./${WEIGHT_NAME}.json public/weights/configs/
 
     echo "File $WEIGHTS_DIR/$WEIGHTS_FILE downloaded."
   else

@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: 16.x
       - run: npm install
+      - run: sudo apt install python3 && pip install gdown && chmod 777 ./downloadWeights.sh && ./downloadWeights.sh
       - run: npm run build
       - run: cp -r ./public/weights/* ./dist/
       - name: Upload artifact
@@ -31,7 +32,6 @@ jobs:
         with:
           name: github-pages
           path: dist
-          if-no-files-found: error
 
   # Deployment job
   deploy:
