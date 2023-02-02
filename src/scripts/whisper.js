@@ -21,7 +21,7 @@ class MultiHeadAttention extends tf.layers.Layer {
 		this.out = tf.layers.dense({units: n_state, inputShape: n_state});
 	}
 
-	call(x, xa, mask, kv_cache) {
+	call(x, xa = null, mask = null, kv_cache = null) {
 		const q = this.query.apply(x);
 
 		let k, v;
@@ -33,14 +33,13 @@ class MultiHeadAttention extends tf.layers.Layer {
 			v = kv_cache[this.value];
 		}
 
-		let wv, qk = this.qkv_attention(q, k, v, mask);
+		let [wv, qk] = this.qkv_attention(q, k, v, mask);
 
-		return this.out.apply(wv), qk;
+		return [this.out.apply(wv), qk];
 	}
 
-	qkv_attention(q, k, v, mask) {
-        let n_batch, n_ctx, n_state;
-        n_batch = n_ctx = n_state = q.shape;
+	qkv_attention(q, k, v, mask = null) {
+        let [n_batch, n_ctx, n_state] = q.shape;
 
 		let scale = Math.pow(Math.floor(n_state / this.n_head), -0.25);
 		q = q.reshape(q.shape.slice(0, 2).concat([this.n_head], [-1])).transpose([0, 2, 1, 3]).mul(scale);
@@ -53,12 +52,13 @@ class MultiHeadAttention extends tf.layers.Layer {
 		}
         qk = qk.cast('float32');
 
-        let w = tf.softmax(qk, dim=-1);
+        // let w = tf.softmax(qk, dim=-1);
+		let w = tf.layers.softmax({axis: -1}).apply(qk)
 
 		let res = w.matMul(v).transpose([0, 2, 1, 3]);
 		let new_shape = res.shape.slice(0, 2).concat([-1]);
 
-		return res.reshape(new_shape), qk;
+		return [res.reshape(new_shape), qk];
 	}
 }
 
@@ -72,10 +72,10 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 	constructor(n_state, n_head, cross_attention=false) {
 		super();
 
-		this.attn = MultiHeadAttention({n_state: n_state, n_head: n_head});
+		this.attn = new MultiHeadAttention({n_state: n_state, n_head: n_head});
 		this.attn_ln = tf.layers.layerNormalization({input_shape: n_state});
 
-		this.cross_attn = cross_attention ? MultiHeadAttention({n_state: n_state, n_head: n_head}) : null;
+		this.cross_attn = cross_attention ? new MultiHeadAttention({n_state: n_state, n_head: n_head}) : null;
 		this.cross_attn_ln = cross_attention ? tf.layers.layerNormalization({input_shape: n_state}) : null;
 
 		let n_mlp = n_state * 4;
@@ -89,7 +89,13 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 		this.mlp_ln = tf.layers.layerNormalization({input_shape: n_state});
 	}
 
-	call(x, xa, mask, kv_cache) {
-		x = x.add(this.attn())
+	call(x, xa = null, mask = null, kv_cache = null) {
+		x = x.add(this.attn.apply({x: self.attn_ln.apply(x), mask: mask, kv_cache: kv_cache}))
+		if (this.cross_attn) {
+			x = x.add(this.cross_attn.apply({x: this.cross_attn_ln.apply(x), xa: xa, kv_cache: kv_cache}));
+		}
+		x = x.add(this.mlp.apply(this.mlp_ln.apply(x)));
+
+		return x;
 	}
 }

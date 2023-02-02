@@ -17,9 +17,13 @@
   "license": "ISC",
   "homepage": "https://github.com/WhisperTeamDVFU/Whisper_TF_JS#readme",
   "dependencies": {
+    "@tensorflow/tfjs": "^4.2.0",
     "jquery": "^3.6.3"
   },
   "devDependencies": {
-    "parcel": "^2.8.3"
+    "@parcel/transformer-sass":"2.8.3",
+    "buffer": "^5.7.1",
+    "parcel": "^2.8.3",
+    "process": "^0.11.10"
   }
 }
