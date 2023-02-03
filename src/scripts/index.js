@@ -1,8 +1,8 @@
 import $ from "jquery";
 import { Weights } from './Weights';
 import { Whisper } from './Whisper-test';
-import tiny_url from 'url:../../tiny.hdf5';
-import base_url from 'url:../../base.hdf5';
+import tiny_url from 'url:/tiny.hdf5';
+import base_url from 'url:/base.hdf5';
 import CONFIGS from './Config';
 
 const MODELS_URL = {
