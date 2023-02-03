@@ -1,19 +1,8 @@
-import $ from "jquery";
 import * as tf from "@tensorflow/tfjs";
+import $ from "jquery";
 import { Weights } from './Weights';
+import { audio2tensor, logMelSpectrogram } from './LMS';
 import mel_filters from './mel_filters.json'
-
-var CurrentWeights;
-var CurrentCofig;
-
-function exactDiv(x, y) {
-    return Math.floor(x / y);
-};
-function log10(x) {
-    let x1 = tf.log(x);
-    let x2 = tf.log(10.0);
-    return tf.div(x1, x2);
-};
 
 const SAMPLE_RATE = 16000
 const N_FFT = 400
@@ -22,7 +11,24 @@ const HOP_LENGTH = 160
 const CHUNK_LENGTH = 30
 const N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE  // 480000: number of samples in a chunk
 const N_FRAMES = exactDiv(N_SAMPLES, HOP_LENGTH)  // 3000: number of frames in a mel spectrogram input
-//console.log('N_SAMPLES', N_SAMPLES, 'N_FRAMES', N_FRAMES);
+
+let logSpec;
+$('#read_audio').on('click', audio2tensor);
+$('#LMS_test').on('click', logSpec = logMelSpectrogram);
+
+var CurrentWeights;
+var CurrentCofig;
+
+function exactDiv(x, y) {
+    return Math.floor(x / y);
+};
+
+function log10(x) {
+    let x1 = tf.log(x);
+    let x2 = tf.log(10.0);
+    return tf.div(x1, x2);
+};
+
 var audioBuffer;
 let tensorAudio;
 function audio2tensor () {
@@ -72,8 +78,6 @@ let IsTensorReady = false;
 $('#read_audio').on('click', audio2tensor);
 $('#LMS_test').on('click', logMelSpectrogram);
 
-
-
 $(function() {
     $("h1").on("click", function() {
         alert("jQuery is working!");
@@ -88,16 +92,13 @@ $(function() {
         console.log(file);
         let data = await file.arrayBuffer();
         console.log(data);
-
         let weights = new Weights(file.name);
-
         await weights.init(data);
-
+        
         CurrentWeights = weights;
         document.getElementById("CurrentWeights").innerHTML = CurrentWeights.get('decoder.positional_embedding');
-
+        
         console.log(weights);
-
         weights.get('decoder.positional_embedding').print();
     });
 
