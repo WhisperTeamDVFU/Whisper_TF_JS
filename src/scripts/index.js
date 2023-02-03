@@ -2,6 +2,9 @@ import $ from "jquery";
 import * as tf from "@tensorflow/tfjs";
 import { Weights } from './Weights';
 
+var CurrentWeights;
+var CurrentCofig;
+
 function exactDiv(x, y) {
     return Math.floor(x / y);
 };
@@ -74,6 +77,9 @@ $(function() {
 
         await weights.init(data);
 
+        CurrentWeights = weights;
+        document.getElementById("CurrentWeights").innerHTML = CurrentWeights.get('decoder.positional_embedding');
+
         console.log(weights);
 
         weights.get('decoder.positional_embedding').print();
@@ -88,6 +94,10 @@ $(function() {
         var content = e.target.result;
 
         var intern = JSON.parse(content);
+
+        CurrentCofig = intern;
+        document.getElementById("CurrentCofig").innerHTML = CurrentCofig.n_mels;
+
         console.log(intern);
         console.log(intern.n_mels);
         };
