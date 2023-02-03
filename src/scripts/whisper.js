@@ -90,7 +90,7 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 	}
 
 	call(x, xa = null, mask = null, kv_cache = null) {
-		x = x.add(this.attn.apply({x: self.attn_ln.apply(x), mask: mask, kv_cache: kv_cache}))
+		x = x.add(this.attn.apply({x: self.attn_ln.apply(x), mask: mask, kv_cache: kv_cache}));
 		if (this.cross_attn) {
 			x = x.add(this.cross_attn.apply({x: this.cross_attn_ln.apply(x), xa: xa, kv_cache: kv_cache}));
 		}
@@ -99,3 +99,38 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 		return x;
 	}
 }
+
+class AudioEncoder extends tf.layers.Layer {
+	constructor(n_mels, n_ctx, n_state, n_head, n_layer) {
+		super();
+
+		this.conv1 = tf.layers.conv1d({filters: n_state, kernelSize: 3, padding: 'same'});
+		this.conv2 = tf.layers.conv1d({filters: n_state, kernelSize: 3, strides: 2, padding: 'same'});
+		this.positional_embedding = sinusoids(n_ctx, n_state);
+
+		this.blocks = [];
+		for (let i = 0; i < n_layer; i++) {
+			this.blocks.push(new ResidualAttentionBlock({n_state: n_state, n_head: n_head}));
+		}
+		this.ln_post = tf.layers.layerNormalization({inputShape: n_state});
+
+		this.gelu = new GELU();
+	}
+
+	call(x) {
+		x = this.gelu.apply(this.conv1.apply(x));
+		x = this.gelu.apply(this.conv2.apply(x));
+		x = x.transpose([0, 2, 1]);
+
+		tf.util.assert(tf.equal(tf.tensor(x.shape.slice(1)), tf.tensor(this.positional_embedding.shape)), 'incorrect audio shape');
+		x = x.add(this.positional_embedding);
+		
+		for (let block of this.blocks) {
+			x = block.apply(x);
+		}
+
+		x = this.ln_post.apply(x);
+		return x;
+	}
+}
+
