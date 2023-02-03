@@ -134,3 +134,21 @@ class AudioEncoder extends tf.layers.Layer {
 	}
 }
 
+class TextDecoder extends tf.layers.Layer {
+	constructor(n_vocab, n_ctx, n_state, n_head, n_layer) {
+		super();
+
+		this.token_embedding = tf.layers.embedding(n_vocab, n_state);
+		this.positional_embedding = tf.fill([n_ctx, n_state], null);
+
+		this.blocks = [];
+		for (let i = 0; i < n_layer; i++) {
+			this.blocks.push(new ResidualAttentionBlock({n_state: n_state, n_head: n_head, cross_attention: true}));
+		}
+		this.ln = tf.layers.layerNormalization({inputShape: n_state});
+
+		mask = tf.fill([n_ctx, n_ctx], -Infinity); // triu_(1) ?
+	}
+
+	// NotImplementedError
+}
