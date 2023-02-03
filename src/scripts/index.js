@@ -22,9 +22,9 @@ import { audio2tensor, logMelSpectrogram } from './LMS';
 import mel_filters from './mel_filters.json'
 
 let logSpec;
+
 $('#read_audio').on('click', audio2tensor);
 $('#LMS_test').on('click', logSpec = logMelSpectrogram);
-
 $(function() {
 
     $('#model_size_select').on("change", async function(){
@@ -60,8 +60,6 @@ $(function() {
 
         await whisper.init(CurrentCofig, CurrentWeights);
     });
-
-
 
 });
 
