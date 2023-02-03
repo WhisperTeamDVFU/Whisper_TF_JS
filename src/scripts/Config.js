@@ -1,0 +1,35 @@
+export default CONFIGS = {
+    "tiny":{
+        "n_mels": 80, 
+        "n_vocab": 51865, 
+        "n_audio_ctx": 1500, 
+        "n_audio_state": 384, 
+        "n_audio_head": 6, 
+        "n_audio_layer": 4, 
+        "n_text_ctx": 448, 
+        "n_text_state": 384, 
+        "n_text_head": 6, 
+        "n_text_layer": 4},
+    "base": {
+        "n_mels": 80, 
+        "n_vocab": 51865, 
+        "n_audio_ctx": 1500, 
+        "n_audio_state": 512, 
+        "n_audio_head": 8, 
+        "n_audio_layer": 6, 
+        "n_text_ctx": 448, 
+        "n_text_state": 512, 
+        "n_text_head": 8, 
+        "n_text_layer": 6},
+    "small": {
+        "n_mels": 80, 
+        "n_vocab": 51865, 
+        "n_audio_ctx": 1500, 
+        "n_audio_state": 768, 
+        "n_audio_head": 12, 
+        "n_audio_layer": 12, 
+        "n_text_ctx": 448, 
+        "n_text_state": 768, 
+        "n_text_head": 12, 
+        "n_text_layer": 12}
+    }

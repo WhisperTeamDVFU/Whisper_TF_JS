@@ -7,10 +7,12 @@
 <body>
     <input type="file" id="audiofile">
     <button id="read_audio">Read audio</button>
+    <h1>Hello, World!!!</h1>
     <button id="LMS_test">LMS test</button>
     <h1>Hello, World!</h1>
 
     <select id="model_size_select">
+        <option>Выбрать вес</option>
         <option value = "tiny">tiny</option>
         <option value = "base">base</option>
         <option value = "small">small</option>
@@ -18,18 +20,14 @@
         <option value = "large">large</option>
     </select>
 
-    <p><a href="" download>Скачать веса</a></p>
+    <h3>Выбранный размер - <div id="CurrentSizeModel"></div> </h3> 
 
-    <h2>Загрузить веса</h2>
-    <p><input type="file" id="input_file_weights" /></p>
+    <h3>Веса - <div id="CurrentWeights"></div> </h3>  
 
-<h3 id="time">Веса - <div id="CurrentWeights"></div> </h3>  
+    <h3>Конфиг - <div id="CurrentCofig"></div> </h3>  
 
-<h2>Загрузить конфиг (dims)</h2>
-<p><input type="file" id="input_file_config" /></p>
+    <button id="create_model">Собрать модель</button>
 
-<h3 id="time">Конфиг - <div id="CurrentCofig"></div> </h3>  
-
-<script type="module" src="src/scripts/index.js"/>
+    <script type="module" src="src/scripts/index.js"/>
 </body>
 </html>
