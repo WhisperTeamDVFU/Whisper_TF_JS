@@ -18,7 +18,7 @@ const HOP_LENGTH = 160
 const CHUNK_LENGTH = 30
 const N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE  // 480000: number of samples in a chunk
 const N_FRAMES = exactDiv(N_SAMPLES, HOP_LENGTH)  // 3000: number of frames in a mel spectrogram input
-//console.log('N_SAMPLES', N_SAMPLES, 'N_FRAMES', N_FRAMES);
+
 var audioBuffer;
 let tensorAudio;
 let logSpec;
@@ -53,7 +53,7 @@ export function audio2tensor () {
 };
 
 export function logMelSpectrogram(audioTensor=audio2tensor) {
-    console.log('tensorAudio');
+    console.log('LMS is started');
     let stft = tf.signal.stft(tensorAudio, N_FFT, HOP_LENGTH, N_FFT, tf.signal.hannWindow);
     let magnitudes = tf.abs(stft).pow(2).transpose();
     let melSpec = tf.matMul(mel_filters, magnitudes);
@@ -61,26 +61,34 @@ export function logMelSpectrogram(audioTensor=audio2tensor) {
     logSpec = log10(logSpec);
     logSpec = tf.maximum(logSpec, tf.sub(logSpec.max(), 8.0).arraySync());
     logSpec = tf.div(tf.add(logSpec, 4.0), 4.0);
-    logSpec = padOrTrim(logSpec);
     console.log('Log mel spectrogram is calculated');
+    logSpec = cutTo30Sec(logSpec);
     console.log(logSpec);
     return logSpec
 
 };
 
-function padOrTrim(array=logSpec, length=N_SAMPLES) {
-    //paddings: It is an array of length R, the rank of the given tensor,
-    // where each element is of length 2 of ints ([pad_Before, pad_After]),
-    // specifies how much padding should be given along each dimension of the tensor.
-    console.log( N_FRAMES, logSpec.shape[1]);
-    if (logSpec.shape[1] < N_FRAMES) {
-        logSpec =  tf.pad(logSpec, [[0,0],[0,N_FRAMES-logSpec.shape[1]]])
-    }
+function cutTo30Sec(array=logSpec, length=N_FRAMES){
+    let cutSpec;
+    let specShape = logSpec.shape[1];
     if (logSpec.shape[1] > N_FRAMES) {
-
+        cutSpec =  logSpec.slice([0,0], [80,N_FRAMES]);
+        console.log('First 30 sec of LMS');
+        return cutSpec
+    } else {
+        return logSpec
     };
-    console.log( N_FRAMES, logSpec.shape[1]);
-    console.log('padded');
+
+};
+
+function padOrTrim(array=logSpec, length=N_FRAMES) {
+     if (logSpec.shape[1] < N_FRAMES) {
+        logSpec =  tf.pad(logSpec, [[0,0],[0,N_FRAMES-logSpec.shape[1]]]);
+    };
+    if (logSpec.shape[1] > N_FRAMES) {
+             logSpec = tf.gather(logSpec, tf.range(0, length, 1, 'int32'), -1);
+         };
     return logSpec
 };
+
 

@@ -20,9 +20,9 @@ let CurrentSizeModel = "";
 import { audio2tensor, logMelSpectrogram } from './LMS';
 
 let logSpec;
-$('#read_audio').on('click', audio2tensor);
-$('#LMS_test').on('click', () => logSpec = logMelSpectrogram());
 
+$('#read_audio').on('click', audio2tensor);
+$('#get_LMS').on('click', () => logSpec = logMelSpectrogram());
 $(function() {
 
     $('#model_size_select').on("change", async function(){
