@@ -101,7 +101,7 @@ class ResidualAttentionBlock extends tf.layers.Layer {
 }
 
 class AudioEncoder extends tf.layers.Layer {
-	constructor(n_mels, n_ctx, n_state, n_head, n_layer) {
+	constructor(n_mels, n_ctx, n_state, n_head, n_layer, weights_name, weights_gen) {
 		super();
 
 		this.conv1 = tf.layers.conv1d({filters: n_state, kernelSize: 3, padding: 'same'});
@@ -134,9 +134,9 @@ class AudioEncoder extends tf.layers.Layer {
 	}
 }
 
-function Triu_1(arr) {
-	for (let i = 0; i < 3; i++) {
-		for (let j = 0; j < 3; j++) {
+function Triu_1(arr, n_rows, n_cols) {
+	for (let i = 0; i < n_rows; i++) {
+		for (let j = 0; j < n_cols; j++) {
 			if (i >= j) {
 				arr[i][j] = 0;
 			}
@@ -147,7 +147,7 @@ function Triu_1(arr) {
 }
 
 class TextDecoder extends tf.layers.Layer {
-	constructor(n_vocab, n_ctx, n_state, n_head, n_layer) {
+	constructor(n_vocab, n_ctx, n_state, n_head, n_layer, weights_names, weights_gen) {
 		super();
 
 		this.token_embedding = tf.layers.embedding(n_vocab, n_state);
@@ -159,7 +159,7 @@ class TextDecoder extends tf.layers.Layer {
 		}
 		this.ln = tf.layers.layerNormalization({inputShape: n_state});
 
-		this.mask = Triu_1(tf.fill([n_ctx, n_ctx], -Infinity).arraySync());
+		this.mask = Triu_1(tf.fill([n_ctx, n_ctx], -Infinity).arraySync(), n_ctx, n_ctx);
 	}
 
 	call(x, xa, kv_cache = null) {
@@ -179,15 +179,33 @@ class TextDecoder extends tf.layers.Layer {
 }
 
 class Whisper extends tf.layers.Layer {
-	constructor(dims) {
-		this.dims = dims;
-		
+	constructor(current_config, current_weights) {
+		this.dims = current_config;
+		this.weights_gen = current_weights;
+
+		weights_keys = this.weights_gen.key;
+
+		this.weights_encoder = [];
+		this.weights_decoder = [];
+
+		for (let key of weights_keys) {
+			if(key.includes('encoder')) {
+				this.weights_encoder.push(key);
+			}
+
+			if(key.includes('decoder')) {
+				this.weights_decoder.push(key);
+			}
+		}
+
 		this.encoder = new AudioEncoder(
 			this.dims.n_mels,
 			this.dims.n_audio_ctx,
 			this.dims.n_audio_state,
 			this.dims.n_audio_head,
-			this.dims.n_audio_layer
+			this.dims.n_audio_layer,
+			this.weights_encoder,
+			this.weights_gen
 		);
 
 		this.decoder = new TextDecoder(
@@ -195,7 +213,9 @@ class Whisper extends tf.layers.Layer {
 			this.dims.n_text_ctx,
 			this.dims.n_text_state,
 			this.dims.n_text_head,
-			this.dims.n_text_layer
+			this.dims.n_text_layer,
+			this.weights_decoder,
+			this.weights_gen
 		);
 	}
 
