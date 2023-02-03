@@ -33,9 +33,9 @@ class MultiHeadAttention extends tf.layers.Layer {
 			v = kv_cache[this.value];
 		}
 
-		let [wv, qk] = this.qkv_attention(q, k, v, mask);
+		let wv = this.qkv_attention(q, k, v, mask);
 
-		return [this.out.apply(wv), qk];
+		return this.out.apply(wv);
 	}
 
 	qkv_attention(q, k, v, mask = null) {
@@ -53,12 +53,12 @@ class MultiHeadAttention extends tf.layers.Layer {
         qk = qk.cast('float32');
 
         // let w = tf.softmax(qk, dim=-1);
-		let w = tf.layers.softmax({axis: -1}).apply(qk)
+		let w = tf.layers.softmax({axis: -1}).apply(qk).cast(q.dtype);
 
 		let res = w.matMul(v).transpose([0, 2, 1, 3]);
 		let new_shape = res.shape.slice(0, 2).concat([-1]);
 
-		return [res.reshape(new_shape), qk];
+		return res.reshape(new_shape);
 	}
 }
 
