@@ -134,6 +134,18 @@ class AudioEncoder extends tf.layers.Layer {
 	}
 }
 
+function Triu_1(arr) {
+	for (let i = 0; i < 3; i++) {
+		for (let j = 0; j < 3; j++) {
+			if (i >= j) {
+				arr[i][j] = 0;
+			}
+		}
+	}
+
+	return tf.Tensor(arr);
+}
+
 class TextDecoder extends tf.layers.Layer {
 	constructor(n_vocab, n_ctx, n_state, n_head, n_layer) {
 		super();
@@ -147,8 +159,21 @@ class TextDecoder extends tf.layers.Layer {
 		}
 		this.ln = tf.layers.layerNormalization({inputShape: n_state});
 
-		mask = tf.fill([n_ctx, n_ctx], -Infinity); // triu_(1) ?
+		this.mask = Triu_1(tf.fill([n_ctx, n_ctx], -Infinity).arraySync());
 	}
 
-	// NotImplementedError
+	call(x, xa, kv_cache = null) {
+		offset = kv_cache ? Object.values(kv_cache)[0].shape[1] : 0;
+		let x = this.token_embedding.apply(x).add(this.positional_embedding.slice([offset], [offset + x.shape[-1]]));
+		x = x.cast(xa.dtype);
+
+		for (let block of this.blocks) {
+			x = block.apply({x: x, xa: xa, mask: this.mask, kv_cache: kv_cache});
+		}
+
+		x = this.ln.apply(x);
+		logits = x.matMul(this.token_embedding.getWeights.cast(x.dtype).transpose([0, 1]));
+
+		return logits;
+	}
 }
