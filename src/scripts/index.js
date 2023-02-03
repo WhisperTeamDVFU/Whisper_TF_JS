@@ -13,9 +13,9 @@ const MODELS_URL = {
     "large": tiny_url
 }
 
-var CurrentWeights;
-var CurrentCofig;
-var CurrentSizeModel = "";
+let CurrentWeights;
+let CurrentCofig;
+let CurrentSizeModel = "";
 
 import { audio2tensor, logMelSpectrogram } from './LMS';
 
@@ -39,7 +39,8 @@ $(function() {
         weights.get('decoder.positional_embedding').print();
 
         CurrentCofig = CONFIGS[CurrentSizeModel];
-        document.getElementById("CurrentCofig").innerHTML = [CurrentCofig.n_mels, 
+        document.getElementById("CurrentCofig").innerHTML = [
+            CurrentCofig.n_mels,
             CurrentCofig.n_vocab, 
             CurrentCofig.n_audio_ctx,
             CurrentCofig.n_audio_state,
@@ -58,6 +59,5 @@ $(function() {
 
         await whisper.init(CurrentCofig, CurrentWeights);
     });
-
 });
 

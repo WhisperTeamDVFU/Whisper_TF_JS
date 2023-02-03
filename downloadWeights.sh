@@ -2,17 +2,19 @@
 
 WEIGHTS_DIR="public/weights"
 
+#   ["small"]="https://drive.google.com/file/d/1zTDbW_eKPqOwOhhLy4_RifC_fmxVgjxv/view?usp=share_link"
+
 declare -A WEIGHTS
 WEIGHTS=(
   ["tiny"]="https://drive.google.com/file/d/1ttm1Rdfgk8T-jG1EJhwIxvT0coSdXnN5/view?usp=share_link"
-  ["small"]="https://drive.google.com/file/d/1zTDbW_eKPqOwOhhLy4_RifC_fmxVgjxv/view?usp=share_link"
   ["base"]="https://drive.google.com/file/d/1l3ELPd5MRTG1mIc2UmU7QTBLy-7n71Nj/view?usp=share_link"
 )
+
+#  ["small"]="https://drive.google.com/file/d/1mtAJb7Doi7zN91yETxdf2Yl5nzv4iLC5/view?usp=share_link"
 
 declare -A WEIGHTS_CONFIGS
 WEIGHTS_CONFIGS=(
   ["tiny"]="https://drive.google.com/file/d/1D-eaZX95qRlBB3QUG1zznm8P6wSvtF0D/view?usp=share_link"
-  ["small"]="https://drive.google.com/file/d/1mtAJb7Doi7zN91yETxdf2Yl5nzv4iLC5/view?usp=share_link"
   ["base"]="https://drive.google.com/file/d/1yftHSA-LSa_aPc-6opAmNFTzdq7EedT_/view?usp=share_link"
 )
 
@@ -35,9 +37,7 @@ do
     echo "File $WEIGHTS_DIR/$WEIGHTS_FILE not found, downloading it..."
 
     gdown --fuzzy "${WEIGHTS_URL}"
-    mv ./$WEIGHTS_FILE public/weights/
     gdown --fuzzy "${WEIGHTS_CONFIG_URL}" -O "${WEIGHT_NAME}.json"
-    mv ./${WEIGHT_NAME}.json public/weights/configs/
 
     echo "File $WEIGHTS_DIR/$WEIGHTS_FILE downloaded."
   else
