@@ -1,9 +1,11 @@
 import $ from "jquery";
 import * as tf from "@tensorflow/tfjs";
 import { Weights } from './Weights';
+import { Whisper } from './Whisper-test';
 
 var CurrentWeights;
 var CurrentCofig;
+var CurrentSizeModel = "";
 
 function exactDiv(x, y) {
     return Math.floor(x / y);
@@ -63,7 +65,9 @@ $(function() {
     });
 
     $('#model_size_select').on("change", function(){
-        alert($(this).text());
+        //alert($(this).text());
+        CurrentSizeModel = this.value;
+        document.getElementById("CurrentSizeModel").innerHTML = CurrentSizeModel;
     });
 
     $('#input_file_weights').on('change', async function() {
@@ -103,6 +107,12 @@ $(function() {
         };
 
         fileread.readAsText(file);
+    });
+
+    $('#create_model').on('click', async function() {
+        let whisper = new Whisper(CurrentSizeModel);
+
+        await whisper.init(CurrentCofig, CurrentWeights);
     });
 
 });
