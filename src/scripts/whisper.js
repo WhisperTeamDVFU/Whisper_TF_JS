@@ -177,3 +177,37 @@ class TextDecoder extends tf.layers.Layer {
 		return logits;
 	}
 }
+
+class Whisper extends tf.layers.Layer {
+	constructor(dims) {
+		this.dims = dims;
+		
+		this.encoder = new AudioEncoder(
+			this.dims.n_mels,
+			this.dims.n_audio_ctx,
+			this.dims.n_audio_state,
+			this.dims.n_audio_head,
+			this.dims.n_audio_layer
+		);
+
+		this.decoder = new TextDecoder(
+			this.dims.n_vocab,
+			this.dims.n_text_ctx,
+			this.dims.n_text_state,
+			this.dims.n_text_head,
+			this.dims.n_text_layer
+		);
+	}
+
+	embed_audio(mel) {
+		return this.encoder.apply(mel);
+	}
+
+	logits(tokens, audio_features) {
+		return this.decoder(tokens, audio_features);
+	}
+
+	call(mel, tokens) {
+		return this.decoder(tokens, this.embed_audio(mel));
+	}
+}
