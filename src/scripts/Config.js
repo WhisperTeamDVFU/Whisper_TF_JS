@@ -31,5 +31,27 @@ export default CONFIGS = {
         "n_text_ctx": 448, 
         "n_text_state": 768, 
         "n_text_head": 12, 
-        "n_text_layer": 12}
+        "n_text_layer": 12},
+    "medium":{
+        "n_mels": 80, 
+        "n_vocab": 51865, 
+        "n_audio_ctx": 1500, 
+        "n_audio_state": 1024, 
+        "n_audio_head": 16, 
+        "n_audio_layer": 24, 
+        "n_text_ctx": 448, 
+        "n_text_state": 1024, 
+        "n_text_head": 16, 
+        "n_text_layer": 24},
+    "large":{
+        "n_mels": 80, 
+        "n_vocab": 51865, 
+        "n_audio_ctx": 1500, 
+        "n_audio_state": 1280, 
+        "n_audio_head": 20, 
+        "n_audio_layer": 32, 
+        "n_text_ctx": 448, 
+        "n_text_state": 1280, 
+        "n_text_head": 20, 
+        "n_text_layer": 32}   
     }

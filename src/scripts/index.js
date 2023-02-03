@@ -18,6 +18,7 @@ let CurrentCofig;
 let CurrentSizeModel = "";
 
 import { audio2tensor, logMelSpectrogram } from './LMS';
+import mel_filters from './mel_filters.json'
 
 let logSpec;
 $('#read_audio').on('click', audio2tensor);
@@ -34,9 +35,12 @@ $(function() {
         let weights = new Weights(CurrentSizeModel);
         await weights.init(data);
         CurrentWeights = weights;
-        document.getElementById("CurrentWeights").innerHTML = CurrentWeights.get('decoder.positional_embedding');
 
-        weights.get('decoder.positional_embedding').print();
+        console.log("Ключи: ", CurrentWeights.keys);
+
+        document.getElementById("CurrentWeights").innerHTML = CurrentWeights.get('encoder.blocks.0.mlp_ln.bias');
+        
+        weights.get('encoder.blocks.0.mlp_ln.bias').print();
 
         CurrentCofig = CONFIGS[CurrentSizeModel];
         document.getElementById("CurrentCofig").innerHTML = [

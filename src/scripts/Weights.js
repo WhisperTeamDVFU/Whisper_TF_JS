@@ -12,6 +12,7 @@ export class Weights {
         FS.writeFile(this.name + ".h5", new Uint8Array(buffer));
 
         this.file = new h5wasm.File(this.name + ".h5", "r");
+        this.keys = this.file.keys()
     }
 
     get(key) {
