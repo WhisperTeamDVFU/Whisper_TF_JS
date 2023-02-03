@@ -53,7 +53,7 @@ export function audio2tensor () {
 };
 
 export function logMelSpectrogram(audioTensor=audio2tensor) {
-    console.log('tensorAudio');
+    console.log('LMS is started');
     let stft = tf.signal.stft(tensorAudio, N_FFT, HOP_LENGTH, N_FFT, tf.signal.hannWindow);
     let magnitudes = tf.abs(stft).pow(2).transpose();
     let melSpec = tf.matMul(mel_filters, magnitudes);
@@ -63,6 +63,7 @@ export function logMelSpectrogram(audioTensor=audio2tensor) {
     logSpec = tf.div(tf.add(logSpec, 4.0), 4.0);
     console.log('Log mel spectrogram is calculated');
     logSpec = cutTo30Sec(logSpec);
+    console.log(logSpec);
     return logSpec
 
 };
@@ -72,7 +73,7 @@ function cutTo30Sec(array=logSpec, length=N_FRAMES){
     let specShape = logSpec.shape[1];
     if (logSpec.shape[1] > N_FRAMES) {
         cutSpec =  logSpec.slice([0,0], [80,N_FRAMES]);
-        console.log('30 sec of LMS');
+        console.log('First 30 sec of LMS');
         return cutSpec
     } else {
         return logSpec
