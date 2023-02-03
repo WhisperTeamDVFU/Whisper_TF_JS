@@ -1,6 +1,9 @@
 import $ from "jquery";
 import { Weights } from './Weights';
 
+var CurrentWeights;
+var CurrentCofig;
+
 $(function() {
     $("h1").on("click", function() {
         alert("jQuery is working!");
@@ -21,6 +24,9 @@ $(function() {
 
         await weights.init(data);
 
+        CurrentWeights = weights;
+        document.getElementById("CurrentWeights").innerHTML = CurrentWeights.get('decoder.positional_embedding');
+
         console.log(weights);
 
         weights.get('decoder.positional_embedding').print();
@@ -35,6 +41,10 @@ $(function() {
         var content = e.target.result;
 
         var intern = JSON.parse(content);
+
+        CurrentCofig = intern;
+        document.getElementById("CurrentCofig").innerHTML = CurrentCofig.n_mels;
+
         console.log(intern);
         console.log(intern.n_mels);
         };
