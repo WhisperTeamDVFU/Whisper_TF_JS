@@ -4,29 +4,49 @@
     <title>Jisper</title>
     
 </head>
-<body>
-    <input type="file" id="audiofile">
-    <button id="read_audio">Read audio</button>
-    <button id="get_LMS">Get LMS</button>
-    <h1>Hello, World!</h1>
 
-    <select id="model_size_select">
-        <option>Выбрать вес</option>
-        <option value = "tiny">tiny</option>
-        <option value = "base">base</option>
-        <option value = "small">small</option>
-        <option value = "medium">medium</option>
-        <option value = "large">large</option>
-    </select>
+<style type="text/css">
+    .block1 { 
+     width: 800px; 
+     background: #ccc;
+     padding: 15px;
+     padding-top: 10px; 
+     border: solid 1px black; 
+     box-shadow: 8px 8px 5px #444;
+     text-align: center;
+     text-size-adjust: 24;
+    }
+   </style>
 
-    <h3>Выбранный размер - <div id="CurrentSizeModel"></div> </h3> 
+<body bgcolor="#A0BEC4">
 
-    <h3>Веса - <div id="CurrentWeights"></div> </h3>  
+    <div class="block1" align="center">
 
-    <h3>Конфиг - <div id="CurrentCofig"></div> </h3>  
+        <h1>Hello, Whisper!</h1>
 
-    <button id="create_model">Собрать модель</button>
+        <input type="file" id="audiofile">
+        <button id="read_audio">Read audio</button>
+        <button id="get_LMS">Get LMS</button>
 
-    <script type="module" src="src/scripts/index.js"/>
+        <select id="model_size_select">
+            <option>Выбрать вес</option>
+            <option value = "tiny">tiny</option>
+            <option value = "base">base</option>
+            <option value = "small">small</option>
+            <option value = "medium">medium</option>
+            <option value = "large">large</option>
+        </select>
+
+        <h3>Выбранный размер - <div id="CurrentSizeModel"></div> </h3> 
+
+        <h3>Веса - <div id="CurrentWeights"></div> </h3>  
+
+        <h3>Конфиг - <div id="CurrentCofig"></div> </h3>  
+
+        <button id="create_model">Собрать модель</button>
+
+        <script type="module" src="src/scripts/index.js"/>
+
+    </div>
 </body>
 </html>
