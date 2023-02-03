@@ -1,6 +1,7 @@
 import $ from "jquery";
 import * as tf from "@tensorflow/tfjs";
 import { Weights } from './Weights';
+import mel_filters from './mel_filters.json'
 
 function exactDiv(x, y) {
     return Math.floor(x / y);
@@ -18,8 +19,10 @@ const HOP_LENGTH = 160
 const CHUNK_LENGTH = 30
 const N_SAMPLES = CHUNK_LENGTH * SAMPLE_RATE  // 480000: number of samples in a chunk
 const N_FRAMES = exactDiv(N_SAMPLES, HOP_LENGTH)  // 3000: number of frames in a mel spectrogram input
+//console.log('N_SAMPLES', N_SAMPLES, 'N_FRAMES', N_FRAMES);
 var audioBuffer;
-
+let tensorAudio;
+let logSpec;
 function audio2tensor () {
     let file = $('#audiofile')[0].files[0];
     let reader = new FileReader();
@@ -40,19 +43,44 @@ function audio2tensor () {
             let resampled = await offlineCtx.startRendering();
             let audioArray = new Float32Array(resampled.length);
             resampled.copyFromChannel(audioArray, 0, 0);
-            var tensorAudio = tf.tensor(audioArray);
+            tensorAudio = tf.tensor(audioArray);
             console.log('Audio file has transformed to tensor');
+            //console.log('tensorAudio', tensorAudio);
             return tensorAudio;
         });
     };
     reader.readAsArrayBuffer(file);
 };
 
-$('#read_audio').on('click', logMelSpectrogram(audio2tensor));
 
-function logMelSpectrogram(audioTensor) {
-    return audioTensor
+function padOrTrim(array=logSpec, length=N_SAMPLES) {
+    if (logSpec.shape[1] < N_FRAMES) {
+        logSpec =  tf.pad(logSpec, [[0,0],[0,N_FRAMES-logSpec.shape[1]]])}
+    console.log('padded');
+    return logSpec
 };
+
+ function logMelSpectrogram(audioTensor=tensorAudio) {
+
+    console.log('tensorAudio');
+    let stft = tf.signal.stft(tensorAudio, N_FFT, HOP_LENGTH, N_FFT, tf.signal.hannWindow);
+    let magnitudes = tf.abs(stft).pow(2).transpose();
+    let melSpec = tf.matMul(mel_filters, magnitudes);
+    logSpec = tf.minimum(  tf.maximum(melSpec, tf.tensor(1e-10) ), melSpec.max().arraySync() );
+    logSpec = log10(logSpec);
+    logSpec = tf.maximum(logSpec, tf.sub(logSpec.max(), 8.0).arraySync());
+    logSpec = tf.div(tf.add(logSpec, 4.0), 4.0);
+    console.log('Log mel spectrogram is calculated');
+    return padOrTrim(logSpec)
+
+};
+
+
+let IsTensorReady = false;
+$('#read_audio').on('click', audio2tensor);
+$('#LMS_test').on('click', logMelSpectrogram);
+
+
 
 $(function() {
     $("h1").on("click", function() {
@@ -66,7 +94,6 @@ $(function() {
     $('#input_file_weights').on('change', async function() {
         let file = $(this)[0].files[0];
         console.log(file);
-
         let data = await file.arrayBuffer();
         console.log(data);
 
@@ -79,14 +106,14 @@ $(function() {
         weights.get('decoder.positional_embedding').print();
     });
 
+
+
     $('#input_file_config').on('change', async function() {
         let file = $(this)[0].files[0];
         console.log(file);
-
         var fileread = new FileReader();
         fileread.onload = function(e) {
         var content = e.target.result;
-
         var intern = JSON.parse(content);
         console.log(intern);
         console.log(intern.n_mels);
@@ -95,4 +122,7 @@ $(function() {
         fileread.readAsText(file);
     });
 
+
+
 });
+
