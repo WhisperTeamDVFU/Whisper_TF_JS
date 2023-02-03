@@ -6,6 +6,12 @@
 /.parcel-cache
 /public/weights
 
+*.hdf5
+
+base.json
+small.json
+tiny.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

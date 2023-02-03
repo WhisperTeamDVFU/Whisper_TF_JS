@@ -1,4 +1,3 @@
-import * as tf from "@tensorflow/tfjs";
 import $ from "jquery";
 import { Weights } from './Weights';
 import { Whisper } from './Whisper-test';
@@ -14,16 +13,15 @@ const MODELS_URL = {
     "large": tiny_url
 }
 
-var CurrentWeights;
-var CurrentCofig;
-var CurrentSizeModel = "";
+let CurrentWeights;
+let CurrentCofig;
+let CurrentSizeModel = "";
 
 import { audio2tensor, logMelSpectrogram } from './LMS';
-import mel_filters from './mel_filters.json'
 
 let logSpec;
 $('#read_audio').on('click', audio2tensor);
-$('#LMS_test').on('click', logSpec = logMelSpectrogram);
+$('#LMS_test').on('click', () => logSpec = logMelSpectrogram());
 
 $(function() {
 
@@ -41,7 +39,8 @@ $(function() {
         weights.get('decoder.positional_embedding').print();
 
         CurrentCofig = CONFIGS[CurrentSizeModel];
-        document.getElementById("CurrentCofig").innerHTML = [CurrentCofig.n_mels, 
+        document.getElementById("CurrentCofig").innerHTML = [
+            CurrentCofig.n_mels,
             CurrentCofig.n_vocab, 
             CurrentCofig.n_audio_ctx,
             CurrentCofig.n_audio_state,
@@ -60,8 +59,5 @@ $(function() {
 
         await whisper.init(CurrentCofig, CurrentWeights);
     });
-
-
-
 });
 
